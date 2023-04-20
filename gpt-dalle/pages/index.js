@@ -1,5 +1,7 @@
 import Head from "next/head";
-import { useState } from "react";
+import Draggable from "react-draggable";
+import { Resizable } from "re-resizable";
+import { useState, useRef, useEffect } from "react";
 
 import styles from "../styles/Home.module.css";
 
@@ -10,6 +12,19 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [editing, setEditing] = useState(true);
+
+  const [dragWidth, setDragWidth] = useState(50);
+  const [dragHeight, setDragHeight] = useState(50);
+
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    if (elementRef.current) {
+      console.log('Element:', elementRef.current);
+      console.log('Element position:', elementRef.current.getBoundingClientRect());
+    }
+  }, []);
 
   function getImages() {
     if (prompt != "") {
@@ -46,6 +61,48 @@ export default function Home() {
       });
   }
 
+  function edit() {
+    setEditing(true);
+    setError(false);
+    setLoading(false);
+  }
+
+  function handleResize(e, data, handle) {
+    const { x, y } = data;
+    const img = e.target.parentElement.previousSibling;
+    const parent = e.target.parentElement.parentElement;
+    let newWidth = img.width;
+    let newHeight = img.height;
+
+    switch (handle) {
+      case "tl":
+        newWidth -= x;
+        newHeight -= y;
+        break;
+      case "tr":
+        newWidth += x;
+        newHeight -= y;
+        break;
+      case "bl":
+        newWidth -= x;
+        newHeight += y;
+        break;
+      case "br":
+        newWidth += x;
+        newHeight += y;
+        break;
+    }
+
+    // Set the minimum width and height
+    newWidth = Math.max(newWidth, 50);
+    newHeight = Math.max(newHeight, 50);
+
+    img.style.width = newWidth + "px";
+    img.style.height = newHeight + "px";
+    parent.style.width = newWidth + "px";
+    parent.style.height = newHeight + "px";
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -65,8 +122,12 @@ export default function Home() {
             placeholder="Prompt"
           />
           {"  "}
-          <button onClick={getImages}>Get Images</button>
-        </p>
+          {results.length == 0 ? (
+            <button onClick={edit}>Edit</button>
+          ) : (
+            <button onClick={getImages}>Get Images</button>
+          )}
+        </p >
         <small>
           Picture Ratio:&nbsp;{" "}
           <select
@@ -86,17 +147,33 @@ export default function Home() {
         {error ? (<div className={styles.error}>Something went wrong. Try again.</div>) : (<></>)}
         {loading && (<div className={styles.loading}>Loading...</div>)}
         <div className={styles.grid}>
-          {results.map((result) => {
-            return (
-              <div className={styles.card}>
-                <img
-                  className={styles.imgPreview}
-                  src={result.url}
-                  onClick={() => download(result.url)}
-                />
-              </div>
-            );
-          })}
+          {/* {results.map((result) => { */}
+          {/* return ( */}
+          <div className={styles.card}>
+
+            <img ref={elementRef} className={styles.imgPreview} src="https://hips.hearstapps.com/hmg-prod/images/little-cute-maltipoo-puppy-royalty-free-image-1652926025.jpg?crop=0.444xw:1.00xh;0.129xw,0&resize=980:*" />
+            {editing && (
+              <>
+                <Draggable
+                  onDrag={(e, data) => {
+                      console.log('Element position:', data);
+                      console.log('e: ', e.clientY);
+                  }}
+                >
+                  <Resizable
+                    defaultSize={{width: dragWidth, height: dragHeight}}         
+                    style={{backgroundColor: "red", display: "flex", position: "absolute", marginTop: "-100px"}}
+                  >
+                      Drag me!
+                  </Resizable>
+            
+                </Draggable>
+              </>
+            )}
+
+          </div>
+          {/* ); */}
+          {/* })} */}
         </div>
       </main>
     </div>

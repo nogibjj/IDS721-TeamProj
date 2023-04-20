@@ -2,7 +2,7 @@
   padding: 0 2rem;
   background-image: url("../public/background.jpg");
   background-repeat: no-repeat;
-  background-size: cover;
+  /* background-size: cover; */
 }
 
 .main {
@@ -95,13 +95,7 @@
   border-radius: 10px;
 }
 
-.imgPreview:hover,
-.imgPreview:focus,
-.imgPreview:active {
-  transform: scale(1.1);
-  cursor: pointer;
-  transition-duration: 1s;
-}
+
 
 .card h2 {
   margin: 0 0 1rem 0;
@@ -145,4 +139,42 @@
   font-size: 16px;
   padding: 10px;
   margin: 10px;
+}
+
+.resizer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  /* background-color: rgba(255, 255, 255, 0.5); */
+  background-image: url("https://oaidalleapiprodscus.blob.core.windows.net/private/org-TbglXqRZmFmJa0prUGB9cDT6/user-a1bIs4mHwl7keUldbVULFln0/img-SK6ekX9o1SeFYW7gxBBGsZ33.png?st=2023-04-20T19%3A34%3A13Z&se=2023-04-20T21%3A34%3A13Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-04-20T17%3A07%3A06Z&ske=2023-04-21T17%3A07%3A06Z&sks=b&skv=2021-08-06&sig=wC%2BY/7CSe%2BTIU87/06fMGiEjDzrByriK7VSW2XpDGck%3D");
+}
+
+.resizer-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.tl {
+  top: -4px;
+  left: -4px;
+}
+
+.tr {
+  top: -4px;
+  right: -4px;
+}
+
+.bl {
+  bottom: -4px;
+  left: -4px;
+}
+
+.br {
+  bottom: -4px;
+  right: -4px;
 }
