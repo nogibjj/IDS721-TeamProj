@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const openai = new OpenAIApi(configuration);
   const response = await openai.createImage({
     prompt: req.query.p,
-    n: parseInt(req.query.n),
+    n: 1,
     size: "1024x1024",
   });
   console.log(response.data.data);

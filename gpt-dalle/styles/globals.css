@@ -16,6 +16,7 @@ a {
 }
 
 input {
+  width: 50vw;
   font-size: 16px;
   padding: 10px;
   margin: 10px;

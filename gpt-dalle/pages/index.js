@@ -6,19 +6,17 @@ import styles from "../styles/Home.module.css";
 import axios from "axios";
 
 export default function Home() {
-  const [token, setToken] = useState("");
   const [prompt, setPrompt] = useState("");
-  const [number, setNumber] = useState(1);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
   function getImages() {
-    if (token != "" && prompt != "") {
+    if (prompt != "") {
       setError(false);
       setLoading(true);
       axios
-        .post(`/api/images?t=${token}&p=${prompt}&n=${number}`)
+        .post(`/api/images?p=${prompt}`)
         .then((res) => {
           setResults(res.data.result);
           setLoading(false);
@@ -32,7 +30,7 @@ export default function Home() {
     }
   }
 
-  const [type, setType] = useState("webp");
+  const [type, setType] = useState("landscape");
 
   function download(url) {
     axios
@@ -51,21 +49,14 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create DALLE 2 App</title>
+        <title>IDS721: GPT DALLE App</title>
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Create images with <span className={styles.titleColor}>DALLE 2</span>
+          Create images with <span className={styles.titleColor}>DALLE</span>
         </h1>
         <p className={styles.description}>
-          <input
-            id="token"
-            type="text"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            placeholder="Bearer Token (sk-...)"
-          />
           <input
             id="prompt"
             type="text"
@@ -73,35 +64,27 @@ export default function Home() {
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="Prompt"
           />
-          <input
-            id="number"
-            type="number"
-            value={number}
-            onChange={(e) => setNumber(e.target.value)}
-            placeholder="Number of images"
-            max="10"
-          />
           {"  "}
-          <button onClick={getImages}>Get {number} Images</button>
+          <button onClick={getImages}>Get Images</button>
         </p>
         <small>
-          Download as:{" "}
+          Picture Ratio:{" "}
           <select
             id="type"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
-            <option value="webp">Webp</option>
-            <option value="png">Png</option>
-            <option value="jpg">Jpg</option>
-            <option value="gif">Gif</option>
-            <option value="avif">Avif</option>
+            <option value="landscape">16:9 Landscape</option>
+            <option value="normal">4:3 Normal</option>
+            <option value="classic">3:2 Classic</option>
+            <option value="square">1:1 Square</option>
+            <option value="protrait">3:4 Protrait</option>
           </select>
           {" "}
           Click the image below and save.
         </small>
         <br />
-        {error ? ( <div className={styles.error}>Something went wrong. Try again.</div> ) : ( <></> )}
+        {error ? (<div className={styles.error}>Something went wrong. Try again.</div>) : (<></>)}
         {loading && <p>Loading...</p>}
         <div className={styles.grid}>
           {results.map((result) => {
