@@ -16,7 +16,8 @@ a {
 }
 
 input {
-  width: 50vw;
+  width: 44vw;
+  height: 48px;
   font-size: 16px;
   padding: 10px;
   margin: 10px;
@@ -26,17 +27,28 @@ input {
   border-radius: 3px;
 }
 
-button{
+button {
+  height: 48px;
   font-size: 16px;
   padding: 10px;
   border: none;
   border-bottom: 1px solid #ccc;
   margin-bottom: 10px;
   border-radius: 6px;
+  background-color: #fefefe;
 }
 
 button:hover {
   background-color: cadetblue;
   cursor: pointer;
   color: white;
+}
+
+small {
+  width: 100%;
+  text-align: center;
+}
+
+p {
+  margin: 48px 0 16px 0 !important;
 }

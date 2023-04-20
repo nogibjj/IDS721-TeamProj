@@ -68,7 +68,7 @@ export default function Home() {
           <button onClick={getImages}>Get Images</button>
         </p>
         <small>
-          Picture Ratio:{" "}
+          Picture Ratio:&nbsp;{" "}
           <select
             id="type"
             value={type}
@@ -81,11 +81,10 @@ export default function Home() {
             <option value="protrait">3:4 Protrait</option>
           </select>
           {" "}
-          Click the image below and save.
         </small>
         <br />
         {error ? (<div className={styles.error}>Something went wrong. Try again.</div>) : (<></>)}
-        {loading && <p>Loading...</p>}
+        {loading && (<div className={styles.loading}>Loading...</div>)}
         <div className={styles.grid}>
           {results.map((result) => {
             return (

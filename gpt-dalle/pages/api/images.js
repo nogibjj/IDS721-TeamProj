@@ -1,7 +1,9 @@
 export default async function handler(req, res) {
   const { Configuration, OpenAIApi } = require("openai");
+  require('dotenv').config();
+  const apiKey = process.env.OPENAI_API_KEY;
   const configuration = new Configuration({
-    apiKey: "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"
+    apiKey: apiKey
   });
   const openai = new OpenAIApi(configuration);
   const response = await openai.createImage({
