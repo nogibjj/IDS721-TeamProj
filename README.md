@@ -68,3 +68,4 @@ Pick Project from Practical MLOPs Book-Appendix E. Building a Technical Portfoli
 * Consider recording with a  low-cost mic like follows:  https://www.amazon.com/Samson-Mic-Portable-Condenser-Microphone/dp/B001R76D42/ or equivalent at 48 kHz to 96 kHz.
 * Build this into public Github portfolio with links to your videos in YouTube.
     
+test
