@@ -9,9 +9,9 @@ export default async function handler(req, res) {
   const response = await openai.createImage({
     prompt: req.query.p,
     n: 1,
-    size: "1024x1024",
+    size: "256x256",
   });
-  console.log(response.data.data);
+  // console.log(response.data.data);
   res.status(200).json({ result: response.data.data })
 }
 

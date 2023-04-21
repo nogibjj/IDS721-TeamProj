@@ -12,7 +12,7 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   const [deltaX, setDeltaX] = useState(0);
   const [deltaY, setDeltaY] = useState(0);
 
@@ -49,6 +49,49 @@ export default function Home() {
     setLoading(false);
   }
 
+  function getModifiedImage() {
+    if (results.length > 0 && prompt != "") {
+      setError(false);
+      setLoading(true);
+      axios
+        .post(
+          // TODO: add the mask to the query string
+          `/api/editImage?image=${results[0].url}&mask=${results[0].url}&p=${prompt}`
+        )
+        .then((res) => {
+          setResults(res.data.result);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setLoading(false);
+          setError(true);
+        });
+    } else {
+      setError(true);
+    }
+  }
+
+  function cancel() {
+    setEditing(false);
+    setError(false);
+    setResults([]);
+  }
+
+  function getButtons() {
+    if (editing) {
+      return <> 
+      <button onClick={getModifiedImage}>Modify</button>
+      <button onClick={cancel}>Cancel</button>
+      </>;
+    } else {
+      if (results.length > 0) {
+        return <button onClick={edit}>Edit</button>;
+      } else {
+        return <button onClick={getImages}>Get Images</button>;
+      }
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -68,11 +111,7 @@ export default function Home() {
             placeholder="Prompt"
           />
           {"  "}
-          {results.length > 0 ? (
-            <button onClick={edit}>Edit</button>
-          ) : (
-            <button onClick={getImages}>Get Images</button>
-          )}
+          {getButtons()}
         </p>
         <small>
           Picture Ratio:&nbsp;{" "}
