@@ -13,18 +13,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [editing, setEditing] = useState(true);
+  const [deltaX, setDeltaX] = useState(0);
+  const [deltaY, setDeltaY] = useState(0);
 
-  const [dragWidth, setDragWidth] = useState(50);
-  const [dragHeight, setDragHeight] = useState(50);
+  const [boxWidth, setBoxWidth] = useState(0);
+  const [boxHeight, setBoxHeight] = useState(0);
 
   const elementRef = useRef(null);
+  const textRef = useRef(null);
 
-  useEffect(() => {
-    if (elementRef.current) {
-      console.log('Element:', elementRef.current);
-      console.log('Element position:', elementRef.current.getBoundingClientRect());
-    }
-  }, []);
 
   function getImages() {
     if (prompt != "") {
@@ -47,60 +44,10 @@ export default function Home() {
 
   const [type, setType] = useState("landscape");
 
-  function download(url) {
-    axios
-      .post(`/api/download`, { url: url, type: type })
-      .then((res) => {
-        const link = document.createElement("a");
-        link.href = res.data.result;
-        link.download = `${prompt}.${type.toLowerCase()}`;
-        link.click();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
   function edit() {
     setEditing(true);
     setError(false);
     setLoading(false);
-  }
-
-  function handleResize(e, data, handle) {
-    const { x, y } = data;
-    const img = e.target.parentElement.previousSibling;
-    const parent = e.target.parentElement.parentElement;
-    let newWidth = img.width;
-    let newHeight = img.height;
-
-    switch (handle) {
-      case "tl":
-        newWidth -= x;
-        newHeight -= y;
-        break;
-      case "tr":
-        newWidth += x;
-        newHeight -= y;
-        break;
-      case "bl":
-        newWidth -= x;
-        newHeight += y;
-        break;
-      case "br":
-        newWidth += x;
-        newHeight += y;
-        break;
-    }
-
-    // Set the minimum width and height
-    newWidth = Math.max(newWidth, 50);
-    newHeight = Math.max(newHeight, 50);
-
-    img.style.width = newWidth + "px";
-    img.style.height = newHeight + "px";
-    parent.style.width = newWidth + "px";
-    parent.style.height = newHeight + "px";
   }
 
   return (
@@ -155,22 +102,34 @@ export default function Home() {
             {editing && (
               <>
                 <Draggable
-                  onDrag={(e, data) => {
-                      console.log('Element position:', data);
-                      console.log('e: ', e.clientY);
+                  onDrag={(e) => {
+                    const imgRect = elementRef.current.getBoundingClientRect();
+                    const textRect = textRef.current.getBoundingClientRect();
+                    const relativeX = textRect.left - imgRect.left;
+                    const relativeY = textRect.top - imgRect.top;
+                    setDeltaX(relativeX);
+                    setDeltaY(relativeY);
+                    console.log('Relative X:', deltaX);
+                    console.log('Relative Y:', deltaY);
                   }}
                 >
                   <Resizable
-                    defaultSize={{width: dragWidth, height: dragHeight}}         
+                    defaultSize={{width: boxWidth, height: boxHeight}}         
+                    onResizeStop={(e, direction, ref, d) => {
+                      setBoxWidth(ref.style.width);
+                      setBoxHeight(ref.style.height);
+                      console.log('Box Width:', boxWidth);
+                      console.log('Box Height:', boxHeight);
+                    }}
                     style={{backgroundColor: "red", display: "flex", position: "absolute", marginTop: "-100px"}}
                   >
+                    <div ref={textRef}>
                       Drag me!
+                    </div>
                   </Resizable>
-            
                 </Draggable>
               </>
             )}
-
           </div>
           {/* ); */}
           {/* })} */}
