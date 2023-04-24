@@ -104,7 +104,7 @@ export default function Home() {
       return (
         <>
           <button onClick={getModifiedImage}>Modify</button>
-          <button onClick={cancel}>Cancel</button>
+          <button onClick={cancel} style={{ marginLeft: "1rem" }}>Cancel</button>
         </>
       );
     } else {
