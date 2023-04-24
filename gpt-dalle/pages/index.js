@@ -13,11 +13,33 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [deltaX, setDeltaX] = useState(0);
-  const [deltaY, setDeltaY] = useState(0);
+  const [topLeftX, setTopLeftX] = useState(0);
+  const [topLeftY, setTopLeftY] = useState(0);
 
-  const [boxWidth, setBoxWidth] = useState(0);
-  const [boxHeight, setBoxHeight] = useState(0);
+  const [boxWidth, setBoxWidth] = useState(100);
+  const [boxHeight, setBoxHeight] = useState(100);
+
+  const [topRightX, setTopRightX] = useState(0);
+  const [topRightY, setTopRightY] = useState(0);
+  const [bottomLeftX, setBottomLeftX] = useState(0);
+  const [bottomLeftY, setBottomLeftY] = useState(0);
+  const [bottomRightX, setBottomRightX] = useState(0);
+  const [bottomRightY, setBottomRightY] = useState(0);
+
+  useEffect(() => {
+    setTopRightX(topLeftX + boxWidth);
+    setTopRightY(topLeftY);
+    setBottomLeftX(topLeftX);
+    setBottomLeftY(topLeftY + boxHeight);
+    setBottomRightX(topLeftX + boxWidth);
+    setBottomRightY(topLeftY + boxHeight);
+
+    console.log("Box Width, Height:", boxWidth, boxHeight)
+    console.log("Top Left(X,Y):", topLeftX, topLeftY);
+    console.log("Top Right(X,Y):", topRightX, topRightY);
+    console.log("Bottom Left(X,Y):", bottomLeftX, bottomLeftY);
+    console.log("Bottom Right(X,Y):", bottomRightX, bottomRightY);
+  }, [topLeftX, topLeftY, boxWidth, boxHeight]);
 
   const elementRef = useRef(null);
   const textRef = useRef(null);
@@ -79,10 +101,12 @@ export default function Home() {
 
   function getButtons() {
     if (editing) {
-      return <> 
-      <button onClick={getModifiedImage}>Modify</button>
-      <button onClick={cancel}>Cancel</button>
-      </>;
+      return (
+        <>
+          <button onClick={getModifiedImage}>Modify</button>
+          <button onClick={cancel}>Cancel</button>
+        </>
+      );
     } else {
       if (results.length > 0) {
         return <button onClick={edit}>Edit</button>;
@@ -153,19 +177,15 @@ export default function Home() {
                           textRef.current.getBoundingClientRect();
                         const relativeX = textRect.left - imgRect.left;
                         const relativeY = textRect.top - imgRect.top;
-                        setDeltaX(relativeX);
-                        setDeltaY(relativeY);
-                        console.log("Relative X:", deltaX);
-                        console.log("Relative Y:", deltaY);
+                        setTopLeftX(relativeX);
+                        setTopLeftY(relativeY);
                       }}
                     >
                       <Resizable
                         defaultSize={{ width: boxWidth, height: boxHeight }}
                         onResizeStop={(e, direction, ref, d) => {
-                          setBoxWidth(ref.style.width);
-                          setBoxHeight(ref.style.height);
-                          console.log("Box Width:", boxWidth);
-                          console.log("Box Height:", boxHeight);
+                          setBoxWidth(parseInt(ref.style.width, 10));
+                          setBoxHeight(parseInt(ref.style.height), 10);
                         }}
                         style={{
                           backgroundColor: "red",
