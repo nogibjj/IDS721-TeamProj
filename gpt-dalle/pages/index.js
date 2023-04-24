@@ -196,15 +196,20 @@ export default function Home() {
                         <div
                           ref={textRef}
                           style={{
-                            border: "1px dashed red",
-                            backgroundColor: "rgba(0, 0, 0, 0)",
+                            border: "3px dashed red",
+                            backgroundColor: "rgba(0, 0, 0, 0.17)",
                             padding: "5px",
                             boxSizing: "border-box",
                             width: "100%",
                             height: "100%",
+                            textAlign: "center",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "lightgreen",
                           }}
                         >
-                          Drag me!
+                          Draggable MASK!
                         </div>
                       </Resizable>
                     </Draggable>
