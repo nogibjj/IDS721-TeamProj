@@ -34,7 +34,7 @@ export default function Home() {
     setBottomRightX(topLeftX + boxWidth);
     setBottomRightY(topLeftY + boxHeight);
 
-    console.log("Box Width, Height:", boxWidth, boxHeight)
+    console.log("Box Width, Height:", boxWidth, boxHeight);
     console.log("Top Left(X,Y):", topLeftX, topLeftY);
     console.log("Top Right(X,Y):", topRightX, topRightY);
     console.log("Bottom Left(X,Y):", bottomLeftX, bottomLeftY);
@@ -188,13 +188,24 @@ export default function Home() {
                           setBoxHeight(parseInt(ref.style.height), 10);
                         }}
                         style={{
-                          backgroundColor: "red",
                           display: "flex",
                           position: "absolute",
                           marginTop: "-100px",
                         }}
                       >
-                        <div ref={textRef}>Drag me!</div>
+                        <div
+                          ref={textRef}
+                          style={{
+                            border: "1px dashed red",
+                            backgroundColor: "rgba(0, 0, 0, 0)",
+                            padding: "5px",
+                            boxSizing: "border-box",
+                            width: "100%",
+                            height: "100%",
+                          }}
+                        >
+                          Drag me!
+                        </div>
                       </Resizable>
                     </Draggable>
                   </>
