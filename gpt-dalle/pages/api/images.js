@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const cropDimensions = await getCropDimensions("landscape", 256, 256); // console.log(req.body.type);
     let cropped = await cropImage(pixelsMatrix, cropDimensions);
     console.log(cropped);
-    res.status(200).json({ result: response.data.data }) // // now is the url for the image
+    res.status(200).json({ result: response.data.data }) // now is the url for the image
     // TODO: send the cropped image (pixel matrix) to the frontend
 }
 
@@ -68,10 +68,10 @@ async function toMusk(matrix, x, y, width, height) {
 }; 
 
 function getCropDimensions(type, width, height) {
-    let cropWidth = width;
-    let cropHeight = height;
-    let cropX = 0;
-    let cropY = 0;
+    let cropWidth = width; // the width of the croped image
+    let cropHeight = height; // the height of the croped image
+    let cropX = 0; // the staring x point of the croped image
+    let cropY = 0; // the starting y point of the croped image
 
     if (type === "landscape") {
         cropHeight = Math.ceil((9 / 16) * height);
