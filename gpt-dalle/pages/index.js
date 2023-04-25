@@ -49,7 +49,7 @@ export default function Home() {
       setError(false);
       setLoading(true);
       axios
-        .post(`/api/images?p=${prompt}`)
+        .post(`/api/images?p=${prompt}`, {type: type})
         .then((res) => {
           setResults(res.data.result);
           setLoading(false);
@@ -63,7 +63,7 @@ export default function Home() {
     }
   }
 
-  const [type, setType] = useState("landscape");
+  const [type, setType] = useState("square");
 
   function edit() {
     setEditing(true);
