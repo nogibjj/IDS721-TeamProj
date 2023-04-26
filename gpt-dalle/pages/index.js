@@ -51,7 +51,7 @@ export default function Home() {
         axios
             .post(`/api/images?p=${prompt}`, {type: type})
             .then((res) => {
-            setResults(res.data.result);
+            setResults(res.data.croppedImage);
             setLoading(false);
             })
             .catch((err) => {
@@ -159,13 +159,12 @@ export default function Home() {
             )}
             {loading && <div className={styles.loading}>Loading...</div>}
             <div className={styles.grid}>
-            {results.map((result) => {
-                return (
+            {
                 <div className={styles.card}>
                     <img
                     ref={elementRef}
                     className={styles.imgPreview}
-                    src={result.url}
+                    src={results}
                     />
                     {editing && (
                     <>
@@ -216,8 +215,8 @@ export default function Home() {
                     </>
                     )}
                 </div>
-                );
-            })}
+                
+            }
             </div>
         </main>
         </div>
