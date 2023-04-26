@@ -1,4 +1,5 @@
 var getPixels = require("get-pixels");
+import { Canvas, CanvasRenderingContext2D } from 'canvas';
 
 export default async function handler(req, res) {
     const { Configuration, OpenAIApi } = require("openai");
@@ -17,13 +18,28 @@ export default async function handler(req, res) {
     const url = response.data.data[0].url;
     // convert the image to 2D array of pixels 256 * 256 * 4
     let pixelsMatrix = await urlImage2PixelMatrix(url);
-    
+
     // crop the image
-    const cropDimensions = await getCropDimensions("landscape", 256, 256); // console.log(req.body.type);
+    const cropDimensions = await getCropDimensions("landscape", 256, 256);
     let cropped = await cropImage(pixelsMatrix, cropDimensions);
-    console.log(cropped);
-    res.status(200).json({ result: response.data.data }) // now is the url for the image
-    // TODO: send the cropped image (pixel matrix) to the frontend
+    // console.log(cropped);
+
+    // convert the cropped pixel matrix to a data URL
+    const canvas = drawPixelMatrixOnCanvas(cropped, cropDimensions.width, cropDimensions.height);
+    const croppedDataURL = canvas.toDataURL();
+
+    getImageDimensions(croppedDataURL)
+        .then((dimensions) => {
+            console.log(`Image dimensions: ${dimensions.width} x ${dimensions.height}`);
+        })
+        .catch((error) => {
+            console.error("Error getting image dimensions:", error);
+        });
+    
+    res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
+    // issue 1: the url is correctly referring to a correctly cropped image
+    // however, the front end is not displaying the croped image
+    // issue 2: calculation of cropping dimensions is not correct
 }
 
 async function urlImage2PixelMatrix(url) {
@@ -100,3 +116,35 @@ async function cropImage(matrix, cropDimensions) {
     }
     return croppedPixels;
 };
+
+function drawPixelMatrixOnCanvas(matrix, width, height) {
+    const canvas = new Canvas(width, height);
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(width, height);
+    for (let i = 0; i < matrix.length; i++) {
+        imageData.data[i] = matrix[i];
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas;
+}
+
+const axios = require("axios");
+const sharp = require("sharp");
+
+async function getImageDimensions(url) {
+    try {
+        // Download the image as a buffer
+        const response = await axios.get(url, { responseType: "arraybuffer" });
+
+        // Create a Sharp instance with the image buffer
+        const image = sharp(Buffer.from(response.data));
+
+        // Get the image metadata (including dimensions)
+        const metadata = await image.metadata();
+
+        // Return the dimensions
+        return { width: metadata.width, height: metadata.height };
+    } catch (error) {
+        throw error;
+    }
+}
