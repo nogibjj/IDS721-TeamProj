@@ -20,9 +20,8 @@ export default async function handler(req, res) {
     let pixelsMatrix = await urlImage2PixelMatrix(url);
 
     // crop the image
-    const cropDimensions = await getCropDimensions("landscape", 256, 256);
+    const cropDimensions = await getCropDimensions(req.body.type, 256, 256);
     let cropped = await cropImage(pixelsMatrix, cropDimensions);
-    // console.log(cropped);
 
     // convert the cropped pixel matrix to a data URL
     const canvas = drawPixelMatrixOnCanvas(cropped, cropDimensions.width, cropDimensions.height);
@@ -37,9 +36,6 @@ export default async function handler(req, res) {
         });
     
     res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
-    // issue 1: the url is correctly referring to a correctly cropped image
-    // however, the front end is not displaying the croped image
-    // issue 2: calculation of cropping dimensions is not correct
 }
 
 async function urlImage2PixelMatrix(url) {
@@ -121,12 +117,20 @@ function drawPixelMatrixOnCanvas(matrix, width, height) {
     const canvas = new Canvas(width, height);
     const ctx = canvas.getContext("2d");
     const imageData = ctx.createImageData(width, height);
-    for (let i = 0; i < matrix.length; i++) {
-        imageData.data[i] = matrix[i];
+    let count = 0;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            imageData.data[count] = matrix[y][x][0]; // red
+            imageData.data[count + 1] = matrix[y][x][1]; // green
+            imageData.data[count + 2] = matrix[y][x][2]; // blue
+            imageData.data[count + 3] = matrix[y][x][3]; // alpha
+            count += 4; // increment by 4 to move to the next pixel
+        }
     }
     ctx.putImageData(imageData, 0, 0);
     return canvas;
 }
+
 
 const axios = require("axios");
 const sharp = require("sharp");
