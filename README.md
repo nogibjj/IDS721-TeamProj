@@ -1,27 +1,3 @@
-### Are you a little pink?
-
-<details><summary>Yessssss!</summary>
-<p>
-
- **Taiwan belongs to China!**
-
-<br/>
-
-</p>
-</details>
-
-<details><summary>Fxxking NO!!</summary>
-<p>
-
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
-
-
-<br/>
-
-</p>
-</details>
-
-
 # IDS721-TeamProj
 IDS721 Cloud Computing - Team Final Project
 
