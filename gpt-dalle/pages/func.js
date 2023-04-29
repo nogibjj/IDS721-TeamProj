@@ -1,56 +1,5 @@
-import fs from "fs";
 var getPixels = require("get-pixels");
 import { Canvas, CanvasRenderingContext2D } from 'canvas';
-// I want to import all functions from func.js in pages folder
-
-
-export default async function handler(req, res) {
-    const { Configuration, OpenAIApi } = require("openai");
-    require("dotenv").config();
-    const apiKey = process.env.OPENAI_API_KEY;
-    const configuration = new Configuration({
-        apiKey: apiKey,
-    });
-    const openai = new OpenAIApi(configuration);
-    let maskMatrix = await urlImage2PixelMatrix(req.body.results);
-    let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
-    const canvas0 = drawPixelMatrixOnCanvas(mask, mask[0].length, mask.length);
-    const maskURL = canvas0.toDataURL();
-
-    console.log(maskURL);
-
-    const response = await openai.createImageEdit({
-        image: fs.createReadStream(maskURL),
-        mask: fs.createReadStream(maskURL),
-        prompt: req.query.p,
-        n: 1,
-        size: "256x256",
-    });
-    // url for the image
-    const url = response.data.data[0].url;
-    // convert the image to 2D array of pixels 256 * 256 * 4
-    let pixelsMatrix = await urlImage2PixelMatrix(url);
-
-    // crop the image
-    const cropDimensions = await getCropDimensions(req.body.type, 256, 256);
-    let cropped = await cropImage(pixelsMatrix, cropDimensions);
-
-    // convert the cropped pixel matrix to a data URL
-    const canvas = drawPixelMatrixOnCanvas(cropped, cropDimensions.width, cropDimensions.height);
-    const croppedDataURL = canvas.toDataURL();
-
-    getImageDimensions(croppedDataURL)
-        .then((dimensions) => {
-            console.log(`Image dimensions: ${dimensions.width} x ${dimensions.height}`);
-        })
-        .catch((error) => {
-            console.error("Error getting image dimensions:", error);
-        });
-    
-    res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
-}
-
-
 
 async function urlImage2PixelMatrix(url) {
     return new Promise((resolve, reject) => {

@@ -78,7 +78,8 @@ export default function Home() {
         axios
             .post(
             // TODO: add the mask to the query string
-            `/api/editImage?image=${results[0].url}&mask=${results[0].url}&p=${prompt}`
+            `/api/editImage?image=${results[0]}&p=${prompt}`,
+            {topLeftX: topLeftX, topLeftY: topLeftY, boxWidth: boxWidth, boxHeight: boxHeight, type: type, results: results}
             )
             .then((res) => {
             setResults(res.data.result);

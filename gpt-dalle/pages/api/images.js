@@ -1,5 +1,6 @@
 var getPixels = require("get-pixels");
 import { Canvas, CanvasRenderingContext2D } from 'canvas';
+// import {urlImage2PixelMatrix, getCropDimensions, cropImage, drawPixelMatrixOnCanvas, getImageDimensions} from "../func.js";
 
 export default async function handler(req, res) {
     const { Configuration, OpenAIApi } = require("openai");
@@ -38,6 +39,8 @@ export default async function handler(req, res) {
     res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
 }
 
+
+
 async function urlImage2PixelMatrix(url) {
     return new Promise((resolve, reject) => {
         getPixels(url, function (err, pixels) {
@@ -69,15 +72,28 @@ async function urlImage2PixelMatrix(url) {
     });
 }
 
+function checkBoundary(x) {
+    if (x < 0) {
+        return 0;
+    }
+    if (x > 255) {
+        return 255;
+    }
+}
+
 async function toMusk(matrix, x, y, width, height) {
     let musk = [...matrix];
-    for (let i = y; i < y + height; i++) {
-        for (let j = x; j < x + width; j++) {
+    let newX = checkBoundary(Math.floor(x));
+    let newY = checkBoundary(Math.floor(y));
+
+    for (let i = newY; i < newY+ height; i++) {
+        for (let j = newX ; j < newX + width; j++) {
         musk[i][j] = [0, 0, 0, 0];
         }
     }
     return musk;
 }; 
+
 
 function getCropDimensions(type, width, height) {
     let cropWidth = width; // the width of the croped image
