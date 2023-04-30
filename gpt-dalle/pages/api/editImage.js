@@ -1,4 +1,3 @@
-import fs from "fs";
 var getPixels = require("get-pixels");
 import { Canvas, CanvasRenderingContext2D } from 'canvas';
 // I want to import all functions from func.js in pages folder
@@ -27,8 +26,8 @@ export default async function handler(req, res) {
     console.log(__dirname);
 
     const response = await openai.createImageEdit(
-        fs.createReadStream("../../../../public/PIA09246_modest.jpg"),
-        fs.createReadStream("../../../../public/PIA09246_modest.jpg"),
+        "../../../../public/PIA09246_modest.jpg",
+        "../../../../public/PIA09246_modest.jpg",
         "cat",
         1,
         "256x256",
