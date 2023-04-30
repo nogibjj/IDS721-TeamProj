@@ -112,4 +112,4 @@ Wait until health check is automatically completed.
 
 
 ## 5. License
-This project is under the Apache License 2.0.
+This project is under the MIT License.
