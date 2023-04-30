@@ -3,6 +3,10 @@ var getPixels = require("get-pixels");
 import { Canvas, CanvasRenderingContext2D } from 'canvas';
 // I want to import all functions from func.js in pages folder
 
+const stream = require('stream');
+const util = require('util');
+const pipeline = util.promisify(stream.pipeline);
+
 
 export default async function handler(req, res) {
     const { Configuration, OpenAIApi } = require("openai");
@@ -12,25 +16,31 @@ export default async function handler(req, res) {
         apiKey: apiKey,
     });
     const openai = new OpenAIApi(configuration);
+
     let maskMatrix = await urlImage2PixelMatrix(req.body.results);
     let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
     const canvas0 = drawPixelMatrixOnCanvas(mask, mask[0].length, mask.length);
     const maskURL = canvas0.toDataURL();
 
-    console.log(maskURL);
+    console.log("Position1");
 
-    const response = await openai.createImageEdit({
-        image: fs.createReadStream(maskURL),
-        mask: fs.createReadStream(maskURL),
-        prompt: req.query.p,
-        n: 1,
-        size: "256x256",
-    });
+    console.log(__dirname);
+
+    const response = await openai.createImageEdit(
+        fs.createReadStream("../../../../public/PIA09246_modest.jpg"),
+        fs.createReadStream("../../../../public/PIA09246_modest.jpg"),
+        "cat",
+        1,
+        "256x256",
+    );
+
+    console.log("Position2");
     // url for the image
     const url = response.data.data[0].url;
     // convert the image to 2D array of pixels 256 * 256 * 4
     let pixelsMatrix = await urlImage2PixelMatrix(url);
 
+    console.log("Position3");
     // crop the image
     const cropDimensions = await getCropDimensions(req.body.type, 256, 256);
     let cropped = await cropImage(pixelsMatrix, cropDimensions);
@@ -38,6 +48,8 @@ export default async function handler(req, res) {
     // convert the cropped pixel matrix to a data URL
     const canvas = drawPixelMatrixOnCanvas(cropped, cropDimensions.width, cropDimensions.height);
     const croppedDataURL = canvas.toDataURL();
+
+    console.log("Position4");
 
     getImageDimensions(croppedDataURL)
         .then((dimensions) => {
