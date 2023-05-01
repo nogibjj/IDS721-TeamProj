@@ -1,47 +1,117 @@
-# IDS721-TeamProj
+# IDS721-Dalle2
+
 IDS721 Cloud Computing - Team Final Project
 
-## Option A:
+## 0.1 Introduction 
 
-*   Build a containerized or PaaS machine learning prediction model and deploy it in a scalable, and elastic platform:
-    *   Options:
-        *   ML Framework
-            *   Sklearn, MXNet, PyTorch or Keras/TF
-        *   Model
-            *   Your own supervised ML prediction model or a Kaggle Prediction Model
-        *   Platform
-            *   Flask + Kubernetes deployed to EKS (Elastic Kubernetes) or Google Kubernetes Engine
-            *   Flask + Google App Engine
-            *   AWS Sagemaker
-            *   Other (Upon Request)
-*   Verify Elastic Scale-Up Performance via Load Test with [Locust](https://locust.io/), [Loader.io](https://loader.io), or a similar load test framework. (Start with 1 container or endpoint) and verify 2 or more inference endpoints scale up to 1K requests per second.
-*   Deliverables:
-    *   Source code in Github Project with README.md file that explains the project.
-    *   Demo video showing project scaling to 1K+ requests served by multiple endpoints that scale-up.   The video should be between **one** to **five** minutes.  Videos over five minutes or under one minute will have points deducted.
-    *   **One** to **five** minute in-person class presentation
-*   Reference Project:
-    *   [https://github.com/noahgift/container-revolution-devops-microservices](https://github.com/noahgift/container-revolution-devops-microservices)
-*   (Optional) Reference Videos:
-    *   Data Engineering with Python and AWS Lambda:  [https://learning.oreilly.com/videos/data-engineering-with/9780135964330](https://learning.oreilly.com/videos/data-engineering-with/9780135964330)
-    *   Building AI & ML Applications on Google Cloud Platform:  [https://learning.oreilly.com/videos/building-ai-applications/9780135973462](https://learning.oreilly.com/videos/building-ai-applications/9780135973462)
-    *   AWS Certified Machine Learning: _[https://learning.oreilly.com/videos/aws-certified-machine/9780135556597](https://learning.oreilly.com/videos/aws-certified-machine/9780135556597)
+In this project, we build a web application that allows users to enter a prompt, then return a generated image by ***OpenAI DALLE API***. This project aims to provide inspiration to people mentioned in section 0.2. Users can specify the height-width ratio of the returning image.
 
-## Option B:  
-Pick Project from Practical MLOPs Book-Appendix E. Building a Technical Portfolio for MLOps
+### 0.2. User Groups
+The web application is intended for use by individuals and organizations who require high-quality generated images for various purposes. This includes artists, graphic designers, web developers, and more.
 
-* [Appendix E. Building a Technical Portfolio for MLOps](https://learning.oreilly.com/library/view/practical-mlops/9781098103002/app05.html#idm45917434442872)
+### 0.3. Applications
+The generated images can be used for a variety of applications, including but not limited to:
+- Art and design projects
+- Marketing and advertising campaigns
+- Website and social media graphics
+- E-commerce product images
+- Education and research projects
+- And much more!
 
-#### Additional considerations for final project
+### 1. OpenAI API Key
+You have to obtain your OpenAI API Key to request image generations, variations, or edits. 
 
-* Are you utilizing each person for what they do best:  Presentation, Coding, Math/Statistics/Data Science?
-* Is this project resume worthy?
-* How does the final presentation make your team look?
-* Could this project land you a dream job?
 
-## (Optional, but recommended:)
+## 2. Demo
+### 2.1 Video Demo
+Video is submitted to teams
 
-* The video should be at least 1080p with 16:9 aspect ratio.
-* Consider recording with a  low-cost mic like follows:  https://www.amazon.com/Samson-Mic-Portable-Condenser-Microphone/dp/B001R76D42/ or equivalent at 48 kHz to 96 kHz.
-* Build this into public Github portfolio with links to your videos in YouTube.
-    
-test
+## 3. Getting Started
+
+This project is built into Docker image, but if your want to deploy it locally, here's the guide:
+
+First, install ```node.js``` by ```brew``` on Mac platform:
+
+```bash
+brew update
+brew install node
+```
+Then, check your node version by:
+
+```bash
+node -v
+```
+<!-- You must have ```19.0.0 >= node >= 12.0.0``` (some libraries do not support the latest 20.0 version).  -->
+
+Next, install the required packages:
+```bash
+npm install
+```
+Add API key to ```environment.env``` in root folder
+```bash
+# Obtain from OpenAI!
+OPENAI_API_KEY="" 
+```
+start app
+```
+npm run dev
+```
+
+## 4. Publish to AWS ECR and AppRunner
+
+### 4.1. Build Docker Image
+
+```bash
+docker build -t ids721-dalle . 
+docker run -it --rm -p 8080:8080 ids721-dalle
+```
+
+### 4.2. Push to AWS ECR
+
+Create a new blank ECR image in your AWS dashboard: [AWS ECR](https://us-east-1.console.aws.amazon.com/ecr).
+
+Create a new access key in your AWS IAM dashboard: [AWS IAM](https://us-east-1.console.aws.amazon.com/iamv2).
+
+Install AWS CLI:
+```bash
+sudo apt-get install awscli
+```
+
+Configure your local credentials:
+```bash
+aws configure
+# enter your access key and secrets, select default region: us-east-1
+```
+
+Retrieve an authentication token and authenticate your Docker client to your registry.
+```bash
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_ECR_ID.dkr.ecr.us-east-1.amazonaws.com
+# replace YOUR_ECR_ID with your image url
+```
+
+Run the following command to push this image to your newly created AWS repository:
+```bash
+docker push YOUR_ECR_ID.dkr.ecr.us-east-1.amazonaws.com/hugoweather:latest
+# replace YOUR_ECR_ID with your image url
+```
+
+
+### 4.3. Publish to AWS AppRunner
+
+Create a new AppRunner service: [AWS APPRunner](https://us-east-1.console.aws.amazon.com/apprunner) 
+
+Select the image you built, and choose **Auto Deploy**.
+
+Wait until health check is automatically completed.
+
+## 4.4 Contributors
+
+- [Arthur Chen](https://github.com/ArthurChenCoding)
+- [Hugo Hu](https://github.com/0HugoHu)
+- [Minghui Zhu](https://github.com/zhuminghui17)
+- [Enze Shi](https://github.com/casnz1601)
+
+## 5. License
+This project is under the MIT License.
+
+
