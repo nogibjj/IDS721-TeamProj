@@ -14,16 +14,29 @@ export default async function handler(req, res) {
     const openai = new OpenAIApi(configuration);
     const img0 = req.body.originalImage;
 
-    const data0 = img0.replace(/data:image\/png;base64,/, "");
-    const buffer0 = Buffer.from(data0, 'base64');
-    const originFile = 'origin' + '.png';
-    fs.writeFile(originFile, buffer0, (error) => {
-        if (error) {
-            console.log('Unable to save the file.');
-        } else {
-            console.log('File saved:', originFile);
-        }
-    });
+    let Matrix = await urlImage2PixelMatrix(img0);
+
+    getImageDimensions(img0)
+        .then((dimensions) => {
+            // convert the cropped pixel matrix to a data URL
+            const canvas = drawPixelMatrixOnCanvas(Matrix, dimensions.width, dimensions.height);
+            const originalURL = canvas.toDataURL('image/png');
+            const img = originalURL;
+            const data = img.replace(/data:image\/png;base64,/, "");
+            const buffer = Buffer.from(data, 'base64');
+            const originalFile = 'original' + '.png';
+            fs.writeFile(originalFile, buffer, (error) => {
+            if (error) {
+                console.log('Unable to save the file.');
+            } else {
+                console.log('File saved:', originalFile);
+            }
+            });
+            console.log(`Image dimensions: ${dimensions.width} x ${dimensions.height}`);
+        })
+        .catch((error) => {
+            console.error("Error getting image dimensions:", error);
+        });
 
     let maskMatrix = await urlImage2PixelMatrix(req.body.results);
     let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
@@ -46,7 +59,7 @@ export default async function handler(req, res) {
     console.log(maskURL);
 
     const response = await openai.createImageEdit({
-        image: fs.createReadStream(maskURL),
+        image: fs.createReadStream("original.png"),
         mask: fs.createReadStream(maskFile),
         prompt: req.query.p,
         n: 1,
