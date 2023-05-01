@@ -56,16 +56,16 @@ export default async function handler(req, res) {
     });
 
 
-    console.log(maskURL);
-
-    const response = await openai.createImageEdit({
-        image: fs.createReadStream("original.png"),
-        mask: fs.createReadStream(maskFile),
-        prompt: req.query.p,
-        n: 1,
-        size: "256x256",
-    });
+    try {
+    const response = await openai.createImageEdit(
+        fs.createReadStream("original.png"),
+        fs.createReadStream(maskFile),
+        req.query.p,
+        1,
+        "256x256",
+    );
     // url for the image
+    console.log(response.data.data[0].url);
     const url = response.data.data[0].url;
     // convert the image to 2D array of pixels 256 * 256 * 4
     let pixelsMatrix = await urlImage2PixelMatrix(url);
@@ -87,6 +87,14 @@ export default async function handler(req, res) {
         });
     
     res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
+    } catch (error) {
+        if (error.response) {
+            console.log(error.response.status);
+            console.log(error.response.data);
+        } else {
+            console.log(error.message);
+        }
+    }
 }
 
 
