@@ -1,6 +1,6 @@
-# IDS721-Dalle2
+# IDS721-Teamproject
 
-IDS721 Cloud Computing - Team Final Project
+IDS721 Cloud Computing - Team Project
 
 ## 0.1 Introduction 
 
