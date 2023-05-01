@@ -1,8 +1,6 @@
 import fs from "fs";
 var getPixels = require("get-pixels");
 import { Canvas, CanvasRenderingContext2D } from 'canvas';
-// I want to import all functions from func.js in pages folder
-
 
 export default async function handler(req, res) {
     const { Configuration, OpenAIApi } = require("openai");
@@ -38,8 +36,10 @@ export default async function handler(req, res) {
             console.error("Error getting image dimensions:", error);
         });
 
-    let maskMatrix = await urlImage2PixelMatrix(req.body.results);
-    let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
+    let maskMatrix = makeDeepCopy(Matrix);   
+
+    let mask = toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
+
     const canvas0 = drawPixelMatrixOnCanvas(mask, mask[0].length, mask.length);
     const maskURL = canvas0.toDataURL('image/png');
 
@@ -104,8 +104,6 @@ export default async function handler(req, res) {
     }
 }
 
-
-
 async function urlImage2PixelMatrix(url) {
     return new Promise((resolve, reject) => {
         getPixels(url, function (err, pixels) {
@@ -144,19 +142,21 @@ function checkBoundary(x) {
     if (x > 255) {
         return 255;
     }
+    return x;
 }
 
-async function toMusk(matrix, x, y, width, height) {
-    let musk = [...matrix];
-    let newX = checkBoundary(Math.floor(x));
-    let newY = checkBoundary(Math.floor(y));
+function toMusk(maskMatrix, x, y, width, height) {
+    const newX = checkBoundary(Math.floor(x));
+    const newY = checkBoundary(Math.floor(y));
+    const newBottom = checkBoundary(Math.floor(y+height));
+    const newRight = checkBoundary(Math.floor(x+width));
 
-    for (let i = newY; i < newY+ height; i++) {
-        for (let j = newX ; j < newX + width; j++) {
-        musk[i][j] = [0, 0, 0, 0];
+    for (let i = newY; i < newBottom; i++) {
+        for (let j = newX; j < newRight; j++) {
+            maskMatrix[i][j] = [0, 0, 0, 0];
         }
     }
-    return musk;
+    return maskMatrix;
 }; 
 
 
@@ -235,5 +235,23 @@ async function getImageDimensions(url) {
 }
 
 
+// function checkTwoMatrixDifferent (matrix1, matrix2) {
+//     let count = 0;
+//     for (let i = 0; i < matrix1.length; i++) {
+//         for (let j = 0; j < matrix1[0].length; j++) {
+//             if (matrix1[i][j] !== matrix2[i][j]) {
+//                 count++;
+//             }
+//         }
+//     }
+//     return count;
+// }
 
-// 
+
+function makeDeepCopy(matrix) {
+    let newMatrix = [];
+    for (let i = 0; i < matrix.length; i++) {
+        newMatrix.push([...matrix[i]]);
+    }
+    return newMatrix;
+}
