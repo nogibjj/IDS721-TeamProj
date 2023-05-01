@@ -15,13 +15,26 @@ export default async function handler(req, res) {
     let maskMatrix = await urlImage2PixelMatrix(req.body.results);
     let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
     const canvas0 = drawPixelMatrixOnCanvas(mask, mask[0].length, mask.length);
-    const maskURL = canvas0.toDataURL();
+    const maskURL = canvas0.toDataURL('image/png');
+
+    const img = maskURL;
+    const data = img.replace(/data:image\/png;base64,/, "");
+    const buffer = Buffer.from(data, 'base64');
+    const maskFile = 'mask' + '.png';
+    fs.writeFile(maskFile, buffer, (error) => {
+    if (error) {
+        console.log('Unable to save the file.');
+    } else {
+        console.log('File saved:', maskFile);
+    }
+    });
+
 
     console.log(maskURL);
 
     const response = await openai.createImageEdit({
         image: fs.createReadStream(maskURL),
-        mask: fs.createReadStream(maskURL),
+        mask: fs.createReadStream(maskFile),
         prompt: req.query.p,
         n: 1,
         size: "256x256",
