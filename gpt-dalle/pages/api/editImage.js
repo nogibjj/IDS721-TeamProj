@@ -57,10 +57,17 @@ export default async function handler(req, res) {
 
 
     try {
-    const response = await openai.createImageEdit(
+        // openai.createImageEdit Arguments:
+        // image string Required
+        // mask string Optional
+        // prompt string Required
+        // n integer Optional Defaults to 1
+        // size string Optional Defaults to 1024x1024
+
+    const response = await openai.createImageVariation(
         fs.createReadStream("original.png"),
-        fs.createReadStream(maskFile),
-        req.query.p,
+        // fs.createReadStream(maskFile),
+        // req.query.p,
         1,
         "256x256",
     );
@@ -86,7 +93,7 @@ export default async function handler(req, res) {
             console.error("Error getting image dimensions:", error);
         });
     
-    res.status(200).json({ result: response.data.data, croppedImage: croppedDataURL });
+    res.status(200).json({ result: response.data.data[0].url, croppedImage: croppedDataURL });
     } catch (error) {
         if (error.response) {
             console.log(error.response.status);

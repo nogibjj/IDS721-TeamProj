@@ -55,6 +55,7 @@ export default function Home() {
             setOriginalImage(res.data.result[0].url);
             setResults(res.data.croppedImage);
             setLoading(false);
+            setPrompt("Create Image Variation!!!");
             })
             .catch((err) => {
             setLoading(false);
@@ -84,6 +85,7 @@ export default function Home() {
             {topLeftX: topLeftX, topLeftY: topLeftY, boxWidth: boxWidth, boxHeight: boxHeight, type: type, results: results, originalImage: originalImage}
             )
             .then((res) => {
+                // TODO: fix and display the croppedDataURL
             setResults(res.data.result);
             setLoading(false);
             })
@@ -103,20 +105,25 @@ export default function Home() {
     }
 
     function getButtons() {
-        if (editing) {
-        return (
+        // if (editing) {
+        // return (
+        //     <>
+        //     <button onClick={getModifiedImage}>Modify</button>
+        //     <button onClick={cancel} style={{ marginLeft: "1rem" }}>Cancel</button>
+        //     </>
+        // );
+        // } else {
+        if (results.length > 0) {
+            return (
             <>
-            <button onClick={getModifiedImage}>Modify</button>
+            <button onClick={getModifiedImage}>Surprise Me!</button>
             <button onClick={cancel} style={{ marginLeft: "1rem" }}>Cancel</button>
             </>
-        );
-        } else {
-        if (results.length > 0) {
-            return <button onClick={edit}>Edit</button>;
+            )
         } else {
             return <button onClick={getImages}>Get Images</button>;
         }
-        }
+        // }
     }
 
     return (
