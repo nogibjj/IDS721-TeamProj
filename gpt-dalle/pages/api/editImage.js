@@ -12,6 +12,19 @@ export default async function handler(req, res) {
         apiKey: apiKey,
     });
     const openai = new OpenAIApi(configuration);
+    const img0 = req.body.originalImage;
+
+    const data0 = img0.replace(/data:image\/png;base64,/, "");
+    const buffer0 = Buffer.from(data0, 'base64');
+    const originFile = 'origin' + '.png';
+    fs.writeFile(originFile, buffer0, (error) => {
+        if (error) {
+            console.log('Unable to save the file.');
+        } else {
+            console.log('File saved:', originFile);
+        }
+    });
+
     let maskMatrix = await urlImage2PixelMatrix(req.body.results);
     let mask = await toMusk(maskMatrix, req.body.topLeftX, req.body.topLeftY, req.body.boxWidth, req.body.boxHeight);
     const canvas0 = drawPixelMatrixOnCanvas(mask, mask[0].length, mask.length);

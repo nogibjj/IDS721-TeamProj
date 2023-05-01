@@ -10,6 +10,7 @@ import axios from "axios";
 export default function Home() {
     const [prompt, setPrompt] = useState("");
     const [results, setResults] = useState([]);
+    const [originalImage, setOriginalImage] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [editing, setEditing] = useState(false);
@@ -51,6 +52,7 @@ export default function Home() {
         axios
             .post(`/api/images?p=${prompt}`, {type: type})
             .then((res) => {
+            setOriginalImage(res.data.result[0].url);
             setResults(res.data.croppedImage);
             setLoading(false);
             })
@@ -79,7 +81,7 @@ export default function Home() {
             .post(
             // TODO: add the mask to the query string
             `/api/editImage?image=${results[0]}&p=${prompt}`,
-            {topLeftX: topLeftX, topLeftY: topLeftY, boxWidth: boxWidth, boxHeight: boxHeight, type: type, results: results}
+            {topLeftX: topLeftX, topLeftY: topLeftY, boxWidth: boxWidth, boxHeight: boxHeight, type: type, results: results, originalImage: originalImage}
             )
             .then((res) => {
             setResults(res.data.result);
